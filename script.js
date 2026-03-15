@@ -126,39 +126,39 @@ const locations = [
   },
   {
     id: 6,
-    name: 'Princeton Battlefield State Park',
-    year: 1777,
-    description: 'Historic Revolutionary War battlefield in western New Jersey.',
-    lat: 40.3576,
-    lon: -74.6856,
+    name: 'Monmouth Battleground at Tennent Church',
+    year: 1778,
+    description: 'Associated with British and Continental forces during the Battle of Monmouth; Tennent Memorial Church stands nearby.',
+    lat: 40.3369,
+    lon: -74.2821,
     trivia: [
-      { q: 'Which war was fought at Princeton Battlefield?', a: 'American Revolutionary War', options: ['American Revolutionary War', 'Civil War', 'War of 1812', 'World War II'] }
+      { q: 'The Battle of Monmouth was fought during which war?', a: 'American Revolutionary War', options: ['American Revolutionary War', 'Civil War', 'War of 1812', 'French and Indian War'] }
     ],
     timeline: [
-      { q: 'Princeton Battlefield battle date?', a: '1777', options: ['1777', '1863', '1918', '1945'] }
+      { q: 'Battle of Monmouth took place in', a: '1778', options: ['1778', '1830', '1864', '1914'] }
     ],
     artifacts: [
-      { q: 'A common artifact from this site is a', a: 'Musket', options: ['Musket', 'Axis helmet', 'Rifle', 'Sword'] }
+      { q: 'A period artifact found would be a', a: 'Musket ball', options: ['Musket ball', 'Steam engine', 'Telephone', 'Dinosaur bone'] }
     ],
-    sources: ['Princeton Revolutionary records', 'Washington correspondence']
+    sources: ['Battle correspondence', 'Tennent Church archives']
   },
   {
     id: 7,
-    name: 'Ellis Island National Museum of Immigration',
-    year: 1892,
-    description: 'Gateway for millions of new Americans, located in New York Harbor with NJ connections.',
-    lat: 40.6995,
-    lon: -74.0406,
+    name: 'Sandy Hook Proving Ground (historic)',
+    year: 1874,
+    description: 'Site used by U.S. Army for artillery testing, part of Sandy Hook historic district.',
+    lat: 40.4575,
+    lon: -74.0231,
     trivia: [
-      { q: 'Ellis Island processed immigrants primarily in which century?', a: '20th century', options: ['19th century', '20th century', '21st century', '18th century'] }
+      { q: 'Sandy Hook Proving Ground was used for testing what?', a: 'Artillery shells', options: ['Artillery shells', 'Aircraft', 'Submarines', 'Railroad bots'] }
     ],
     timeline: [
-      { q: 'Ellis Island opened in what year?', a: '1892', options: ['1892', '1800', '1924', '1917'] }
+      { q: 'Sandy Hook Proving Ground began operations in', a: '1874', options: ['1874', '1900', '1941', '1950'] }
     ],
     artifacts: [
-      { q: 'What object might be found in immigration archives?', a: 'Passenger list', options: ['Passenger list', 'Tool kit', 'Aircraft log', 'Medical chart'] }
+      { q: 'A likely artifact type is', a: 'Shell fragment', options: ['Shell fragment', 'Computers', 'Electric cars', 'Radios'] }
     ],
-    sources: ['Ellis Island immigration records', 'NPS museum collections']
+    sources: ['US Army historical data', 'NJ Coastal records']
   }
 ];
 
@@ -335,6 +335,10 @@ function wireEvents() {
   closeModal.addEventListener('click', () => showModal(false));
   closeGame.addEventListener('click', () => showModal(false));
 
+  document.getElementById('move-up').addEventListener('click', () => movePlayerByKey('ArrowUp'));
+  document.getElementById('move-down').addEventListener('click', () => movePlayerByKey('ArrowDown'));
+  document.getElementById('move-left').addEventListener('click', () => movePlayerByKey('ArrowLeft'));
+  document.getElementById('move-right').addEventListener('click', () => movePlayerByKey('ArrowRight'));
   window.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
       showModal(false);

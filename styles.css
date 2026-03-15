@@ -27,6 +27,39 @@ main { padding: 1.2rem; max-width: 1300px; margin: 0 auto; }
 }
 #position-tracker strong { color: #0a2751; font-size: 0.86rem; }
 
+#navigation-controls {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #1d74a6;
+  border-radius: 12px;
+  padding: 0.55rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  box-shadow: 0 5px 14px rgba(17, 71, 120, 0.22);
+}
+
+#navigation-controls .nav-row { display: flex; gap: 0.35rem; }
+
+.nav-btn {
+  min-width: 38px;
+  min-height: 38px;
+  border-radius: 50%;
+  border: 1px solid #2f8fb8;
+  background: linear-gradient(145deg, #e9f6ff, #c9e7fb);
+  color: #0a4c76;
+  font-weight: bold;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.nav-btn:hover { background: linear-gradient(145deg, #d2ebff, #acf0ff); }
+.nav-btn:active { transform: translateY(1px); background: #96d9ff; }
+
 #map-section { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1.5rem; }
 #info-card { border: 2px solid #a5a7c0; border-radius: 12px; background: white; padding: 1rem; width: 100%; max-width: 1100px; }
 #info-card h2 { margin-top: 0; }
