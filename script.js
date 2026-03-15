@@ -123,6 +123,42 @@ const locations = [
       'Victorian era farm equipment catalog',
       'Agricultural census data from 1870s'
     ]
+  },
+  {
+    id: 6,
+    name: 'Princeton Battlefield State Park',
+    year: 1777,
+    description: 'Historic Revolutionary War battlefield in western New Jersey.',
+    lat: 40.3576,
+    lon: -74.6856,
+    trivia: [
+      { q: 'Which war was fought at Princeton Battlefield?', a: 'American Revolutionary War', options: ['American Revolutionary War', 'Civil War', 'War of 1812', 'World War II'] }
+    ],
+    timeline: [
+      { q: 'Princeton Battlefield battle date?', a: '1777', options: ['1777', '1863', '1918', '1945'] }
+    ],
+    artifacts: [
+      { q: 'A common artifact from this site is a', a: 'Musket', options: ['Musket', 'Axis helmet', 'Rifle', 'Sword'] }
+    ],
+    sources: ['Princeton Revolutionary records', 'Washington correspondence']
+  },
+  {
+    id: 7,
+    name: 'Ellis Island National Museum of Immigration',
+    year: 1892,
+    description: 'Gateway for millions of new Americans, located in New York Harbor with NJ connections.',
+    lat: 40.6995,
+    lon: -74.0406,
+    trivia: [
+      { q: 'Ellis Island processed immigrants primarily in which century?', a: '20th century', options: ['19th century', '20th century', '21st century', '18th century'] }
+    ],
+    timeline: [
+      { q: 'Ellis Island opened in what year?', a: '1892', options: ['1892', '1800', '1924', '1917'] }
+    ],
+    artifacts: [
+      { q: 'What object might be found in immigration archives?', a: 'Passenger list', options: ['Passenger list', 'Tool kit', 'Aircraft log', 'Medical chart'] }
+    ],
+    sources: ['Ellis Island immigration records', 'NPS museum collections']
   }
 ];
 
@@ -150,10 +186,14 @@ const closeGame = document.getElementById('close-game');
 const nextQuestion = document.getElementById('next-question');
 
 let map;
+let mapProvider = 'google';
 let allMarkers = [];
 let activeLocation = null;
 let gameState = { mode: null, questions: [], index: 0, score: 0 };
 let progress = { visited: new Set(), gamesPlayed: 0, bestScore: 0 };
+let playerMarker;
+const playerStep = 0.003; // approx degrees movement for keyboard controls (smaller for smoother behavior)
+const nearbyDistance = 800; // meters
 
 function init() {
   loadProgress();
@@ -164,10 +204,73 @@ function init() {
 }
 
 function initMap() {
-  map = L.map('map').setView([40.25, -74.07], 10);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors',
-    maxZoom: 17
+  if (window.google && window.google.maps) {
+    mapProvider = 'google';
+    initGoogleMap();
+  } else {
+    mapProvider = 'leaflet';
+    initLeafletMap();
+  }
+  // Invalidate or resize map after render for a stable centered view
+  setTimeout(() => refreshMapSize(), 250);
+}
+
+function refreshMapSize() {
+  if (mapProvider === 'google' && window.google && window.google.maps && map) {
+    google.maps.event.trigger(map, 'resize');
+    map.setCenter({ lat: 40.25, lng: -74.07 });
+  }
+  if (mapProvider === 'leaflet' && map && map.invalidateSize) {
+    map.invalidateSize();
+  }
+}
+
+function initGoogleMap() {
+  map = new google.maps.Map(mapElement, {
+    center: { lat: 40.25, lng: -74.07 },
+    zoom: 10,
+    mapTypeId: 'roadmap',
+    tilt: 45,
+    gestureHandling: 'greedy',
+    scrollwheel: false,
+    disableDoubleClickZoom: true,
+    keyboardShortcuts: true
+  });
+
+  locations.forEach((loc) => {
+    const marker = new google.maps.Marker({
+      position: { lat: loc.lat, lng: loc.lon },
+      map,
+      title: loc.name,
+    });
+
+    marker.addListener('click', () => selectLocation(loc.id));
+    allMarkers.push({ loc, marker });
+  });
+
+  initPlayer();
+}
+
+function initLeafletMap() {
+  map = L.map('map', {
+    center: [40.25, -74.07],
+    zoom: 9,
+    minZoom: 5,
+    maxZoom: 17,
+    zoomControl: true,
+    scrollWheelZoom: true,
+    doubleClickZoom: true,
+    touchZoom: true,
+    keyboard: true
+  });
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 20,
+    minZoom: 4,
+    tileSize: 256,
+    zoomOffset: 0
   }).addTo(map);
 
   locations.forEach((loc) => {
@@ -175,6 +278,51 @@ function initMap() {
     marker.on('click', () => selectLocation(loc.id));
     allMarkers.push({ loc, marker });
   });
+
+  const bounds = L.latLngBounds(locations.map((loc) => [loc.lat, loc.lon]));
+  map.fitBounds(bounds.pad(0.2));
+  map.setMaxBounds(bounds.pad(0.4));
+
+  initPlayer();
+}
+
+function initPlayer() {
+  if (mapProvider === 'google') {
+    const start = { lat: 40.25, lng: -74.07 };
+
+    playerMarker = new google.maps.Marker({
+      position: start,
+      map,
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 10,
+        fillColor: '#ffde00',
+        fillOpacity: 1,
+        strokeColor: '#1857b5',
+        strokeWeight: 2,
+      },
+      title: 'Explorer',
+      zIndex: 999
+    });
+
+    const info = new google.maps.InfoWindow({ content: 'Explorer avatar: arrow keys / WASD to move.' });
+    info.open(map, playerMarker);
+
+    setTimeout(() => info.close(), 3000);
+  } else {
+    const start = L.latLng(40.25, -74.07);
+
+    playerMarker = L.marker(start, {
+      icon: L.divIcon({
+        className: 'player-icon',
+        html: '<span class="player-avatar">🧭</span>',
+        iconSize: [28, 28],
+        iconAnchor: [14, 14]
+      })
+    }).addTo(map);
+
+    playerMarker.bindPopup('Explorer avatar: arrow keys / WASD to move.').openPopup();
+  }
 }
 
 function wireEvents() {
@@ -185,7 +333,63 @@ function wireEvents() {
   nextQuestion.addEventListener('click', nextQuestionInGame);
   closeModal.addEventListener('click', () => showModal(false));
   closeGame.addEventListener('click', () => showModal(false));
-  window.addEventListener('keydown', (event) => { if (event.key === 'Escape') showModal(false); });
+
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      showModal(false);
+      return;
+    }
+    movePlayerByKey(event.key);
+  });
+
+  window.addEventListener('resize', () => {
+    refreshMapSize();
+  });
+}
+
+function movePlayerByKey(key) {
+  if (!playerMarker || gameModal.classList.contains('show')) return;
+
+  let dLat = 0;
+  let dLng = 0;
+
+  if (key === 'ArrowLeft' || key.toLowerCase() === 'a') dLng = -playerStep;
+  if (key === 'ArrowRight' || key.toLowerCase() === 'd') dLng = playerStep;
+  if (key === 'ArrowUp' || key.toLowerCase() === 'w') dLat = playerStep;
+  if (key === 'ArrowDown' || key.toLowerCase() === 's') dLat = -playerStep;
+
+  if (!dLat && !dLng) return;
+
+  if (mapProvider === 'google') {
+    const current = playerMarker.getPosition();
+    const next = new google.maps.LatLng(current.lat() + dLat, current.lng() + dLng);
+    playerMarker.setPosition(next);
+    map.panTo(next);
+    checkNearbyLocation(next);
+  } else {
+    const current = playerMarker.getLatLng();
+    const next = L.latLng(current.lat + dLat, current.lng + dLng);
+    playerMarker.setLatLng(next);
+    map.panTo(next);
+    checkNearbyLocation(next);
+  }
+}
+
+function checkNearbyLocation(latlng) {
+  const nearest = locations.find((loc) => {
+    let dist;
+    if (mapProvider === 'google') {
+      dist = google.maps.geometry.spherical.computeDistanceBetween(latlng, new google.maps.LatLng(loc.lat, loc.lon));
+    } else {
+      dist = latlng.distanceTo(L.latLng(loc.lat, loc.lon));
+    }
+    return dist <= nearbyDistance;
+  });
+
+  if (nearest) {
+    selectLocation(nearest.id);
+    showMessage(`You found ${nearest.name}!`);
+  }
 }
 
 function filterLocations(term) {
