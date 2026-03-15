@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Monmouth County History Map</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-o9N1j7kz1Ffpp0pbHPQ5pQvNxR9+4kM7Hj1BmibYkEg=" crossorigin="" />
+</head>
+<body>
+  <header>
+    <h1>Monmouth County, NJ Historical Map</h1>
+    <p>Explore key historical places and play mini-games to learn while having fun.</p>
+  </header>
+
+  <main>
+    <section id="map-section">
+      <div class="map-actions">
+        <input id="search-input" type="search" placeholder="Search historical sites..." aria-label="Search historical sites" />
+        <div id="progress-box">
+          <h3>Learning Progress</h3>
+          <p>Visited: <span id="visited-count">0</span> sites</p>
+          <p>Games played: <span id="games-played">0</span></p>
+          <p>Best score: <span id="best-score">0</span></p>
+        </div>
+      </div>
+
+      <div id="map" aria-label="Monmouth County map of historical sites" role="region"></div>
+
+      <aside id="info-card" aria-live="polite">
+        <h2>Click a location to begin</h2>
+        <p>Selected historical place details appear here.</p>
+        <div id="location-details" style="display:none;">
+          <h3 id="location-name"></h3>
+          <p id="location-desc"></p>
+          <p><strong>Year founded:</strong> <span id="location-year"></span></p>
+
+          <div class="game-buttons">
+            <button id="open-trivia-btn" class="btn">Trivia Game</button>
+            <button id="open-timeline-btn" class="btn">Timeline Game</button>
+            <button id="open-artifact-btn" class="btn">Artifact Hunter</button>
+          </div>
+
+          <div id="primary-sources">
+            <h4>Primary Sources</h4>
+            <ul id="source-list"></ul>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section id="guide">
+      <h2>How to Use</h2>
+      <ol>
+        <li>Search or click a marker on the map.</li>
+        <li>Read the location description and primary artifacts.</li>
+        <li>Play a mini-game to unlock fun history badges.</li>
+      </ol>
+    </section>
+  </main>
+
+  <div id="game-modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-content">
+      <button id="close-modal" class="close-btn" aria-label="Close game">✕</button>
+      <h2 id="game-title">Mini-Game</h2>
+      <div id="game-body"></div>
+      <div id="game-feedback"></div>
+      <button id="next-question" class="btn" style="display:none;">Next question</button>
+      <button id="close-game" class="btn">Exit game</button>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-o+ADKm2TPAVB1XzOIU3Bbf4Q/Ijovrm+EzlxWn7rlnU=" crossorigin=""></script>
+  <script src="script.js"></script>
+</body>
+</html>

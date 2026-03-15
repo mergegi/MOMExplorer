@@ -1,0 +1,26 @@
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f7f8fb; color: #1d2340; }
+header { text-align: center; padding: 1.2rem; background: linear-gradient(135deg, #0b3954, #087e8b); color: #f7f7ff; }
+header h1 { margin: 0; font-size: 1.9rem; }
+header p { margin: .6rem 0 0; font-size: 1rem; }
+main { padding: 1.2rem; max-width: 1200px; margin: 0 auto; }
+#map-section { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+.map-actions { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: .8rem; gap: 1rem; }
+#search-input { flex: 1; min-width: 220px; padding: .6rem .8rem; border: 2px solid #a5a7c0; border-radius: 8px; font-size: .95rem; }
+#progress-box { border: 2px solid #d6d8ec; padding: .8rem; border-radius: 12px; background: white; width: 220px; }
+#map { min-height: 520px; border: 2px solid #a5a7c0; border-radius: 12px; }
+#info-card { border: 2px solid #a5a7c0; border-radius: 12px; background: white; padding: 1rem; }
+#info-card h2 { margin-top: 0; }
+.game-buttons { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .5rem; }
+.btn { background: #0b3d91; color: #fff; border: none; border-radius: 8px; padding: .6rem 1rem; cursor: pointer; font-size: .9rem; margin-top: .8rem; }
+.btn:hover { background: #083174; }
+#primary-sources { padding: .6rem .4rem; margin-top: 1rem; border: 1px dashed #a5a7c0; border-radius: 8px; background-color: #f6f9ff; }
+#source-list { margin: 0; padding-left: 1rem; }
+#guide { background: #fff; border: 2px solid #d6d8ec; border-radius: 12px; padding: 1rem; }
+.modal { position: fixed; inset: 0; background: rgba(18, 29, 61, .55); display: none; align-items: center; justify-content: center; padding: 1rem; z-index: 100; }
+.modal.show { display: flex; }
+.modal-content { background: white; border-radius: 12px; max-width: 520px; width: 100%; padding: 1.2rem; box-shadow: 0 0 24px rgba(7, 15, 35, .25); position: relative; }
+.close-btn { position: absolute; top: .6rem; right: .6rem; border: none; background: transparent; font-size: 1.2rem; cursor: pointer; }
+#game-body { margin: 1rem 0; }
+#game-feedback { min-height: 2rem; font-weight: 600; }
+@media (max-width: 900px) { #map-section { grid-template-columns: 1fr; } .map-actions { flex-direction: column; align-items: stretch; } }
