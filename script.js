@@ -284,6 +284,7 @@ function initLeafletMap() {
   map.setMaxBounds(bounds.pad(0.4));
 
   initPlayer();
+  updateTracker(L.latLng(40.25, -74.07));
 }
 
 function initPlayer() {
@@ -315,13 +316,13 @@ function initPlayer() {
     playerMarker = L.marker(start, {
       icon: L.divIcon({
         className: 'player-icon',
-        html: '<span class="player-avatar">🧭</span>',
-        iconSize: [28, 28],
-        iconAnchor: [14, 14]
+        html: '<span class="player-avatar">🐒</span><span class="player-label">Sun Wukong</span>',
+        iconSize: [48, 48],
+        iconAnchor: [24, 24]
       })
     }).addTo(map);
 
-    playerMarker.bindPopup('Explorer avatar: arrow keys / WASD to move.').openPopup();
+    playerMarker.bindPopup('Sun Wukong is exploring the map! Use arrow keys / WASD to move.').openPopup();
   }
 }
 
@@ -371,8 +372,17 @@ function movePlayerByKey(key) {
     const next = L.latLng(current.lat + dLat, current.lng + dLng);
     playerMarker.setLatLng(next);
     map.panTo(next);
+    updateTracker(next);
     checkNearbyLocation(next);
   }
+}
+
+function updateTracker(latlng) {
+  const latEl = document.getElementById('pos-lat');
+  const lonEl = document.getElementById('pos-lon');
+  if (!latEl || !lonEl || !latlng) return;
+  latEl.textContent = latlng.lat.toFixed(5);
+  lonEl.textContent = latlng.lng.toFixed(5);
 }
 
 function checkNearbyLocation(latlng) {
