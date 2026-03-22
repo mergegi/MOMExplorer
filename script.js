@@ -373,7 +373,7 @@ function initLeafletMap() {
     scrollWheelZoom: true,
     doubleClickZoom: true,
     touchZoom: true,
-    keyboard: true
+    keyboard: false // disable default leafet keyboard movement to control avatar only
   });
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
@@ -449,10 +449,39 @@ function wireEvents() {
 
   closeSourceModal.addEventListener('click', () => showSourceModal(false));
   closeSource.addEventListener('click', () => showSourceModal(false));
+
+  const navButtons = [
+    { id: 'move-up', key: 'ArrowUp' },
+    { id: 'move-down', key: 'ArrowDown' },
+    { id: 'move-left', key: 'ArrowLeft' },
+    { id: 'move-right', key: 'ArrowRight' }
+  ];
+
+  navButtons.forEach(({ id, key }) => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    btn.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      movePlayerByKey(key);
+    });
+    btn.addEventListener('keydown', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (event.key === 'Enter' || event.key === ' ') {
+        movePlayerByKey(key);
+      }
+    });
+  });
+
   window.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
       showModal(false);
       return;
+    }
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'a', 's', 'd', 'W', 'A', 'S', 'D'].includes(event.key)) {
+      event.preventDefault();
+      event.stopPropagation();
     }
     movePlayerByKey(event.key);
   });
@@ -479,13 +508,12 @@ function movePlayerByKey(key) {
     const current = playerMarker.getPosition();
     const next = new google.maps.LatLng(current.lat() + dLat, current.lng() + dLng);
     playerMarker.setPosition(next);
-    map.panTo(next);
+    updateTracker({ lat: next.lat(), lng: next.lng() });
     checkNearbyLocation(next);
   } else {
     const current = playerMarker.getLatLng();
     const next = L.latLng(current.lat + dLat, current.lng + dLng);
     playerMarker.setLatLng(next);
-    map.panTo(next);
     updateTracker(next);
     checkNearbyLocation(next);
   }
@@ -495,8 +523,15 @@ function updateTracker(latlng) {
   const latEl = document.getElementById('pos-lat');
   const lonEl = document.getElementById('pos-lon');
   if (!latEl || !lonEl || !latlng) return;
-  latEl.textContent = latlng.lat.toFixed(5);
-  lonEl.textContent = latlng.lng.toFixed(5);
+
+  let lat = latlng.lat;
+  let lng = latlng.lng;
+
+  if (typeof lat === 'function') lat = latlng.lat();
+  if (typeof lng === 'function') lng = latlng.lng();
+
+  latEl.textContent = Number(lat).toFixed(5);
+  lonEl.textContent = Number(lng).toFixed(5);
 }
 
 function checkNearbyLocation(latlng) {
